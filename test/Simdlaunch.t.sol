@@ -8,6 +8,7 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {Simdlaunch} from "../src/Simdlaunch.sol";
 import {TokenFactory} from "./helpers/TokenFactory.sol";
 
+/// forge-config: default.fuzz.runs = 1000
 contract SimdlaunchTest is Test {
     uint256 private constant SUPPLY = 1_000_000_000 * 10 ** 18;
 
@@ -384,7 +385,7 @@ contract SimdlaunchTest is Test {
     }
 
     function testFuzz_TransferConservesSupply(uint256 rawAmount, address recipient) public {
-        vm.assume(recipient != address(0));
+        recipient = address(uint160(bound(uint160(recipient), 1, type(uint160).max)));
         uint256 amount = bound(rawAmount, 0, SUPPLY);
         vm.prank(deployer);
         assertTrue(token.transfer(recipient, amount));
